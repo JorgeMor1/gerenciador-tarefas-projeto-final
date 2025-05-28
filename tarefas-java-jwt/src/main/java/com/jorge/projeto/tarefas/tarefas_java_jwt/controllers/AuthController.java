@@ -1,11 +1,11 @@
 package com.jorge.projeto.tarefas.tarefas_java_jwt.controllers;
 
-mport com.jorge.projeto.tarefas.tarefas_java_jwt.dto.LoginRequestDTO;
+import com.jorge.projeto.tarefas.tarefas_java_jwt.dto.LoginRequestDTO;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.dto.RegisterRequestDTO;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.dto.ResponseDTO;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.model.role.Role;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.model.user.User;
-import com.jorge.projeto.tarefas.tarefas_java_jwt.repository.UserRepository;
+import com.jorge.projeto.tarefas.tarefas_java_jwt.interfaces.repository.UserRepository;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.infra.security.TokenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

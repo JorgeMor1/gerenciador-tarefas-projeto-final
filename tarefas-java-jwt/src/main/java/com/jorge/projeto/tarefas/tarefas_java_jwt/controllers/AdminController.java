@@ -1,10 +1,10 @@
 package com.jorge.projeto.tarefas.tarefas_java_jwt.controllers;
 
-mport com.jorge.projeto.tarefas.tarefas_java_jwt.dto.RegisterRequestDTO;
+import com.jorge.projeto.tarefas.tarefas_java_jwt.dto.RegisterRequestDTO;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.dto.UserDTO;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.model.role.Role;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.model.user.User;
-import com.jorge.projeto.tarefas.tarefas_java_jwt.repository.UserRepository;
+import com.jorge.projeto.tarefas.tarefas_java_jwt.interfaces.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 

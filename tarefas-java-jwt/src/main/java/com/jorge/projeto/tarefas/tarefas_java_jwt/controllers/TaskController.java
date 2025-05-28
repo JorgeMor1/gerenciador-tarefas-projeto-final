@@ -5,7 +5,7 @@ import com.jorge.projeto.tarefas.tarefas_java_jwt.dto.TaskRequestDTO;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.dto.TaskResponseDTO;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.infra.UserDetailsImpl;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.model.task.TaskStatus;
-import com.jorge.projeto.tarefas.tarefas_java_jwt.repository.TaskRepository;
+import com.jorge.projeto.tarefas.tarefas_java_jwt.interfaces.repository.TaskRepository;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
