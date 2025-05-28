@@ -2,7 +2,7 @@ package com.jorge.projeto.tarefas.tarefas_java_jwt.infra.security;
 
 import com.jorge.projeto.tarefas.tarefas_java_jwt.infra.UserDetailsImpl;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.model.user.User;
-import com.jorge.projeto.tarefas.tarefas_java_jwt.repository.UserRepository;
+import com.jorge.projeto.tarefas.tarefas_java_jwt.interfaces.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
