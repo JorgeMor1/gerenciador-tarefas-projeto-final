@@ -1,4 +1,4 @@
-package com.jorge.projeto.tarefas.tarefas_java_jwt.infra.security;
+package com.jorge.projeto.tarefas.tarefas_java_jwt.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;

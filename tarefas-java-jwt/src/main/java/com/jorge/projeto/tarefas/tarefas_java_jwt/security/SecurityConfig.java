@@ -1,4 +1,4 @@
-package com.jorge.projeto.tarefas.tarefas_java_jwt.infra.security;
+package com.jorge.projeto.tarefas.tarefas_java_jwt.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
