@@ -4,5 +4,5 @@ export type Tasks = {
   description: string;
   status: "TODO" | "IN_PROGRESS" | "DONE" ;
   dueDate: string;
-responsible?: number;
+responsible: number;
 };

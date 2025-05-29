@@ -1,14 +1,17 @@
 import { Navigate, useNavigate } from "react-router-dom";
 import type { Tasks } from "./types/Tasks";
 import { useState } from "react";
+import { get } from "react-hook-form";
+import type { User } from "./types/User";
 
 type Props = {
   tasks: Tasks[];
+  users: User[];
 };
 
 
 
-export default function TaskTable({ tasks }: Props) {
+export default function TaskTable({ tasks, users }: Props) {
     const navigate = useNavigate();
 
   const statusLabels: Record<string, string> = {
@@ -19,6 +22,13 @@ export default function TaskTable({ tasks }: Props) {
 
   const formatDate = (dateStr: string) =>
     new Date(dateStr).toLocaleDateString("pt-BR", { timeZone: "UTC" });
+  
+  const getUserNameById = (id?: number) => {
+  if (!users) return "Sem responsável"; 
+  const user = users.find((u) => u.id === id);
+  return user ? user.name : "Sem responsável";
+};
+
 
   const handleEdit = (id: number) => navigate(`/tarefas/${id}/editar`);
 
@@ -43,6 +53,7 @@ export default function TaskTable({ tasks }: Props) {
           <tr key={task.id}>
             <td>{task.title}</td>
             <td>{task.status ? statusLabels[task.status] : "Sem status"}</td>
+            <td>{ getUserNameById(task.responsible)}</td>
             <td>{formatDate(task.dueDate)}</td>
             <td style={{ minWidth: "100px" }}>
                 <button className="btn btn-outline-primary btn-sm" onClick={() => navigate(`/tarefas/${task.id}/editar`)}>
