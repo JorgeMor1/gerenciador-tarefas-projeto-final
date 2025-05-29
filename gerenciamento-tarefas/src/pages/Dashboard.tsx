@@ -32,10 +32,6 @@ export default function Dashboard() {
     loadTasks();
   };
 
-
-  
-
-
   useEffect(() => {
     loadTasks();
   }, []);

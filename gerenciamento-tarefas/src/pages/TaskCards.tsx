@@ -1,7 +1,7 @@
 import { useState } from "react";
-import type  {Tasks} from "../../src/componentes/types/Tasks"
-import  type { StatusOption } from "../componentes/StatusSelect";
-import StatusSelect from "../componentes/StatusSelect";
+import type { Tasks } from "../componentes/types/Tasks";
+import type { StatusOption } from "../../src/componentes/StatusSelect";
+import StatusSelect from "../../src/componentes/StatusSelect";
 
 
 type TaskProps = {

@@ -4,8 +4,8 @@ import { createTask, getTaskById, updateTask } from "../services/TaskService";
 import type { Tasks } from "../componentes/types/Tasks";
 import { useAuth } from "../context/AuthContext";
 import type { User } from "../componentes/types/User";
-import { type StatusOption } from "../componentes/StatusSelect";
-import StatusSelect from "../componentes/StatusSelect";
+import { type StatusOption } from "../../src/componentes/StatusSelect";
+import StatusSelect from "../../src/componentes/StatusSelect";
 import { getAllUsers } from "../services/TaskService";
 import { updateResponsible } from "../services/UserService";
 
