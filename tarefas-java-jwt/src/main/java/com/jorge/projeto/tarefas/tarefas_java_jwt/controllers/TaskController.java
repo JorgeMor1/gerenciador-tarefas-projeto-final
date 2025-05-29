@@ -41,7 +41,7 @@ public class TaskController {
     public List<Tasks> getTasksForUser(Authentication auth) {
         UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
         Long userId = userDetails.getId();
-        return taskRepo.findByFilters(null, null, null, userId);
+        return taskRepo.findByStatusAndDueDateBetweenAndResponsibleId(null, null, null, userId);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

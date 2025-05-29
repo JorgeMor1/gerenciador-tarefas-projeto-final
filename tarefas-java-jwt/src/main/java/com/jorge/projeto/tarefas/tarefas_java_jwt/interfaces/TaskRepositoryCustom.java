@@ -6,5 +6,5 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface TaskRepositoryCustom {
-    List<Tasks> findByFilters(TaskStatus status, LocalDate startDate, LocalDate endDate, Long responsibleId);
+    List<Tasks> findByStatusAndDueDateBetweenAndResponsibleId(TaskStatus status, LocalDate startDate, LocalDate endDate, Long responsibleId);
 }

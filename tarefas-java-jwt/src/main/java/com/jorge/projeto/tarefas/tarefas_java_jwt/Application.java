@@ -9,13 +9,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EntityScan(basePackages = "com.jorge.projeto.tarefas.tarefas_java_jwt")
 public class Application {
 
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
 
-		//Gerando uma senha para ter um usuário admin no banco para poder cadastrar novos admins:
-		System.out.println("Senha do admin gerada:");
-		System.out.println(new BCryptPasswordEncoder().encode("Projeto123*"));
+        //Gerando uma senha para ter um usuário admin no banco para poder cadastrar novos admins:
+        System.out.println("Senha do admin gerada:");
+        System.out.println(new BCryptPasswordEncoder().encode("Projeto123*"));
 
-	}
+    }
 
 }

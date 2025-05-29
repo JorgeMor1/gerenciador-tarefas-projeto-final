@@ -86,7 +86,7 @@ public class TaskService {
             userId = jwtUserId;
         }
 
-        List<Tasks> tasks = taskRepo.findByFilters(status, start, end, userId);
+        List<Tasks> tasks = taskRepo.findByStatusAndDueDateBetweenAndResponsibleId(status, start, end, userId);
 
         return tasks.stream().map(this::toDTO).toList();
     }

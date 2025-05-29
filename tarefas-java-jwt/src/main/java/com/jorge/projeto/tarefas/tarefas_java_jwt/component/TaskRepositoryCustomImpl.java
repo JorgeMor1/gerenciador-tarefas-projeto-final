@@ -20,8 +20,9 @@ public class TaskRepositoryCustomImpl implements TaskRepositoryCustom {
     @PersistenceContext
     private EntityManager entityManager;
 
+
     @Override
-    public List<Tasks> findByFilters(TaskStatus status, LocalDate startDate, LocalDate endDate, Long responsibleId) {
+    public List<Tasks> findByStatusAndDueDateBetweenAndResponsibleId(TaskStatus status, LocalDate startDate, LocalDate endDate, Long responsibleId) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tasks> query = cb.createQuery(Tasks.class);
         Root<Tasks> task = query.from(Tasks.class);
