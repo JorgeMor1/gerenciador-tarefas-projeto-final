@@ -2,7 +2,8 @@
 
 ## OBS: 
 - Os Endpoints disponíveis estão no controller.
-- Devi ao fato de só o Adm poder criar usuários, foi disponibilizado no Application uma impressão no console onde gera uma senha de acesso do admin para que ele possa criar outros usuários. Por isso, não foi colocado na tela a parte de registro;
+- Devido ao fato de só o Adm poder criar usuários, foi disponibilizado no Application uma impressão no console onde gera uma senha de acesso do admin para que ele possa criar outros usuários. Por isso, não foi colocado na tela a parte de registro;
+- Também foi adicionado no docker um insert de um usuário que já seta ele com a role de ADMIN, vom isso, ele faz o login no front e já pode cadastrar usuários;
 
 ## 📌 Objetivo
 
