@@ -1,8 +1,8 @@
-package com.jorge.projeto.tarefas.tarefas_java_jwt.security;
+package com.jorge.projeto.tarefas.tarefas_java_jwt.infra.security;
 
 import com.jorge.projeto.tarefas.tarefas_java_jwt.infra.UserDetailsImpl;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.model.user.User;
-import com.jorge.projeto.tarefas.tarefas_java_jwt.repository.UserRepository;
+import com.jorge.projeto.tarefas.tarefas_java_jwt.interfaces.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
