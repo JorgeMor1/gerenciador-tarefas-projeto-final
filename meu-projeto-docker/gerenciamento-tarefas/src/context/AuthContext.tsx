@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 
 type User = {
   id: number;
-  name: string; 
+  name: string;
   email: string;
   role: string;
 };
@@ -26,16 +26,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   async function login(email: string, password: string) {
-  const user = await import("../services/AuthService").then(s => s.login(email, password));
+    const user = await import("../services/AuthService").then(s => s.login(email, password));
     setUser(user);
 
   }
 
   function logout() {
-     localStorage.removeItem("accessToken");
-  //localStorage.removeItem("refreshToken");
-  localStorage.removeItem("user");
-  setUser(null);
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("user");
+    setUser(null);
   }
 
   return (

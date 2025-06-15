@@ -37,7 +37,7 @@ export const filterTasks = async (filters: TaskFilters) => {
 };
 
 export const updateTask = async (id: number, update: Partial<Tasks>) => {
-    const token = localStorage.getItem("accessToken");
+  const token = localStorage.getItem("accessToken");
   if (!token) {
     throw new Error("Usuário não autenticado. Token ausente.");
   }
@@ -70,16 +70,7 @@ export async function createTask(task: NewTaskPayload): Promise<Tasks> {
 }
 
 
-/*export const updateResponsible = async (taskId: number, responsibleId: number | null) => {
-  const token = localStorage.getItem("accessToken");
-  if (!token) throw new Error("Token JWT ausente.");
 
-  const res = await api.put(`/tasks/${taskId}/responsible`, 
-    { responsibleId }, 
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-  return res.data;
-};*/
 
 export const updateResponsible = async (taskId: number, responsibleId: number | null) => {
   const token = localStorage.getItem("accessToken");
@@ -88,34 +79,11 @@ export const updateResponsible = async (taskId: number, responsibleId: number | 
 
   if (!token) throw new Error("Token JWT ausente.");
 
-  // Como o interceptor já injeta o token, não é necessário passar o header manualmente
   const res = await api.put(`/tasks/${taskId}/responsible`, { responsibleId });
   return res.data;
 };
 
 
-
-/*export const getAllUsers = async (): Promise<User[]> => {
-  const token = localStorage.getItem("accessToken");
-  console.log("Token atual:", token);
-
-  if (!token) {
-    throw new Error("Usuário não autenticado. Token ausente.");
-  }
-
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/admin/users`, {
-    headers: {
-      "Authorization": `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Erro ao buscar usuários");
-  }
-
-  return response.json();
-};*/
 
 export const getAllUsers = async (): Promise<User[]> => {
   const token = localStorage.getItem("accessToken");

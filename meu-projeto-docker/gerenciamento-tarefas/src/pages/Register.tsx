@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-//import axios from 'axios';
 import api from '../services/Api';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
@@ -26,14 +25,12 @@ const Register: React.FC<RegisterProps> = ({ onSuccess }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    //const token = localStorage.getItem('authToken');
     try {
       const endpoint = formData.role === 'ADMIN' ? '/admin/register' : '/admin/user/register';
       await api.post(endpoint, formData);
       onSuccess();
       navigate('/dashboard');
     } catch (err: any) {
-      //setError('Erro ao cadastrar usuário. Verifique os dados ou tente novamente.');
       if (err.response) {
         console.error('Erro na resposta:', err.response.data);
       } else if (err.request) {

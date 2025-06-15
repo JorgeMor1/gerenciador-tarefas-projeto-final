@@ -66,8 +66,8 @@ public class AuthService {
         String adminEmail = "admin@email.com";
         String adminPassword = System.getenv("ADMIN_PASSWORD");
 
-        if(adminPassword == null || adminPassword.isBlank()) {
-            adminPassword = "123456"; 
+        if (adminPassword == null || adminPassword.isBlank()) {
+            adminPassword = "123456";
         }
 
         if (userRepository.findByEmail(adminEmail).isEmpty()) {
