@@ -8,20 +8,13 @@ Aplicação Full Stack para gerenciamento de tarefas entre membros de uma equipe
 
 1. Acesse o diretório onde está o `docker-compose.yml` e execute:
 
-```bash
 docker-compose down -v
 docker-compose up --build   # ou use: docker-compose up -d
 Verifique os containers em execução:
 
-bash
-Copiar
-Editar
 docker ps
 Acesse o banco de dados PostgreSQL:
 
-bash
-Copiar
-Editar
 docker exec -it postgres_db psql -U postgres -d springdb
 🔐 Usuário Admin (gerado automaticamente)
 Email: admin@email.com
