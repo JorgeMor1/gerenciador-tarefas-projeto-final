@@ -6,21 +6,54 @@ export const getAllUsers = async (): Promise<User[]> => {
   return res.data;
 };
 
-  export const updateResponsible = async (taskId: number, newResponsibleId: number) => {
-  const token = localStorage.getItem("token"); 
+export const updateResponsible = async (taskId: number, newResponsibleId: number) => {
+  try {
+    const response = await api.put(`/tasks/${taskId}/responsible`, {
+      responsibleId: newResponsibleId,
+    });
+    return response.data;
+  } catch (error: any) {
+    let errorMessage = "Erro ao atualizar responsável.";
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    }
+    throw new Error(errorMessage);
+  }
+};
+
+
+  /*export const updateResponsible = async (taskId: number, newResponsibleId: number) => {
+  const token = localStorage.getItem("accessToken"); 
 
   if (!token) {
     throw new Error("Token não encontrado");
   }
 
- const response = await fetch(`${process.env.REACT_APP_API_URL}/tasks/${taskId}/responsible`, {
-  method: "PUT",
-  headers: {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
-  },
-  body: JSON.stringify({ responsibleId: newResponsibleId }),
-});
+  try {
+    const response = await api.put(`/tasks/${taskId}/responsible`, { responsibleId: newResponsibleId });
+    return response.data;
+  } catch (error: any) {
+    // Tratando erro com mensagem personalizada
+    let errorMessage = "Erro ao atualizar responsável.";
+    if (error.response && error.response.data && error.response.data.message) {
+      errorMessage = error.response.data.message;
+    }
+    throw new Error(errorMessage);
+  }
+};*/
+
+
+
+ /*const response = await api.put(`${process.env.REACT_APP_API_URL}/tasks/${taskId}/responsible`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify({ responsibleId: newResponsibleId }),
+} );
+
+
 
 if (!response.ok) {
   let errorMessage = "Erro ao atualizar responsável.";
@@ -33,4 +66,4 @@ if (!response.ok) {
   throw new Error(errorMessage);
 }
 
-};
+};*/

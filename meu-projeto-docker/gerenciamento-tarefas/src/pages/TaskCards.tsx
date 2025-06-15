@@ -2,10 +2,12 @@ import { useState } from "react";
 import type { Tasks } from "../componentes/types/Tasks";
 import type { StatusOption } from "../../src/componentes/StatusSelect";
 import StatusSelect from "../../src/componentes/StatusSelect";
+import type { User } from "../componentes/types/User";
 
 
 type TaskProps = {
   task: Tasks;
+  users: User[];
   onUpdate?: (id: number, update: Partial<Tasks>) => void;
 };
 
@@ -16,18 +18,26 @@ export default function TaskCard({ task, onUpdate }: TaskProps) {
 
   const handleSalvar = () => {
     onUpdate?.(task.id, {
+      title: task.title,
       description,
       status,
+      responsible: task.responsible,
     });
     setEditando(false);
   };
 
 
-  const statusMap = {
+  /*const statusMap = {
   DONE: 'Concluída',
   IN_PROGRESS: 'Em andamento',
   TODO: 'A fazer',
-};
+  };*/
+
+  const statusMap: Record<string, string> = {
+    DONE: "Concluída",
+    IN_PROGRESS: "Em andamento",
+    TODO: "A fazer",
+  };
 
   return (
     <div className="card mb-3 shadow-sm">

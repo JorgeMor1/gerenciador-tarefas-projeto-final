@@ -28,6 +28,7 @@ public class AdminController {
         this.passwordEncoder = passwordEncoder;
     }
 
+    //Cadastrar Admin
     @PostMapping("/register")
     public ResponseEntity<?> registerAdmin(@RequestBody RegisterRequestDTO body) {
         Optional<User> user = repository.findByEmail(body.email());
@@ -39,7 +40,29 @@ public class AdminController {
             admin.setRole(Role.ADMIN);
             admin.setCreatedAt(LocalDateTime.now());
             repository.save(admin);
+            System.out.println("Senha recebida: " + body.password());
+            System.out.println("Senha no banco: " + admin.getPassword());
+            System.out.println("Senha confere? " + passwordEncoder.matches(body.password(), admin.getPassword()));
+
             return ResponseEntity.ok("Usuário do tipo ADMIN cadastrado com sucesso!");
+        }
+        return ResponseEntity.badRequest().body("Email já existe.");
+    }
+
+    @PostMapping("/user/register")
+    @PreAuthorize("hasAuthority('ADMIN')") 
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequestDTO body) {
+        Optional<User> user = repository.findByEmail(body.email());
+        if (user.isEmpty()) {
+            User normalUser = new User();
+            normalUser.setEmail(body.email());
+            normalUser.setPassword(passwordEncoder.encode(body.password()));
+            normalUser.setName(body.name());
+            normalUser.setRole(Role.USER); 
+            normalUser.setCreatedAt(LocalDateTime.now());
+            repository.save(normalUser);
+
+            return ResponseEntity.ok("Usuário do tipo USER cadastrado com sucesso!");
         }
         return ResponseEntity.badRequest().body("Email já existe.");
     }

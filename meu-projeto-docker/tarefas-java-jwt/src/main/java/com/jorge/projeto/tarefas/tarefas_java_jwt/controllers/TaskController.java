@@ -1,8 +1,10 @@
 package com.jorge.projeto.tarefas.tarefas_java_jwt.controllers;
 
+import com.jorge.projeto.tarefas.specifications.TaskSpecification;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.dto.ResponsibleUpdateDTO;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.dto.TaskRequestDTO;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.dto.TaskResponseDTO;
+import com.jorge.projeto.tarefas.tarefas_java_jwt.dto.TaskUpdateDTO;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.infra.UserDetailsImpl;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.model.task.TaskStatus;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.interfaces.repository.TaskRepository;
@@ -37,12 +39,31 @@ public class TaskController {
     private final TaskRepository taskRepo;
 
     @PreAuthorize("hasRole('USER')")
+@GetMapping("/user")
+public List<TaskResponseDTO> getTasksForUser(Authentication auth) {
+    Jwt jwt = (Jwt) auth.getPrincipal();
+    Long userId = Long.valueOf(jwt.getClaimAsString("id"));
+
+    // Filtra só pelas tarefas do usuário
+    var spec = TaskSpecification.hasResponsibleId(userId);
+
+    List<Tasks> tasks = taskRepo.findAll(spec);
+    return tasks.stream()
+                .map(taskService::convertToResponseDTO)
+                .toList();
+}
+
+
+    /*@PreAuthorize("hasRole('USER')")
     @GetMapping("/user")
-    public List<Tasks> getTasksForUser(Authentication auth) {
+    public List<TaskResponseDTO> getTasksForUser(Authentication auth) {
         UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
         Long userId = userDetails.getId();
-        return taskRepo.findByStatusAndDueDateBetweenAndResponsibleId(null, null, null, userId);
-    }
+        List<Tasks> tasks =  taskRepo.findByStatusAndDueDateBetweenAndResponsibleId(null, null, null, userId);
+        return tasks.stream()
+                .map(taskService::convertToResponseDTO)
+                .toList();
+    }*/
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin")
@@ -81,7 +102,7 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    @PutMapping("/user/{id}")
+   /*  @PutMapping("/user/{id}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<?> updateTaskByUser(
             @PathVariable Long id,
@@ -94,7 +115,9 @@ public class TaskController {
 
         Jwt jwt = (Jwt) auth.getPrincipal();
 
-        String userIdStr = jwt.getClaimAsString("user_id");
+        //String userIdStr = jwt.getClaimAsString("user_id");
+        String userIdStr = jwt.getClaimAsString("id");
+
         if (userIdStr == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("ID do usuário não encontrado no token.");
         }
@@ -123,7 +146,54 @@ public class TaskController {
 
         taskRepo.save(task);
         return ResponseEntity.ok("Tarefa atualizada com sucesso.");
-    }
+    }*/
+
+    @PutMapping("/user/{id}")
+   @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+   public ResponseEntity<?> updateTaskByUser(
+           @PathVariable Long id,
+           @RequestBody TaskRequestDTO dto,
+           Authentication auth) {
+
+       if (auth == null || !(auth.getPrincipal() instanceof Jwt)) {
+           return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não autenticado corretamente.");
+       }
+
+       Jwt jwt = (Jwt) auth.getPrincipal();
+
+       String userIdStr = jwt.getClaimAsString("id");
+       if (userIdStr == null) {
+           return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("ID do usuário não encontrado no token.");
+       }
+
+       Long userId;
+       try {
+           userId = Long.parseLong(userIdStr);
+       } catch (NumberFormatException e) {
+           return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("ID do usuário inválido no token.");
+       }
+
+       String role = jwt.getClaimAsString("role");
+       boolean isAdmin = "ADMIN".equalsIgnoreCase(role);
+
+       Optional<Tasks> optionalTask = taskRepo.findById(id);
+       if (optionalTask.isEmpty()) {
+           return ResponseEntity.notFound().build();
+       }
+
+       Tasks task = optionalTask.get();
+
+       // ✅ Verificação: ADMIN pode tudo, USER só se for responsável
+       if (!isAdmin && (task.getResponsible() == null || !task.getResponsible().getId().equals(userId))) {
+           return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Você não tem permissão para editar esta tarefa.");
+       }
+
+       // Atualiza os campos permitidos
+       task.setStatus(dto.getStatus());
+
+       taskRepo.save(task);
+       return ResponseEntity.ok("Tarefa atualizada com sucesso.");
+   }
 
 
 
@@ -167,6 +237,32 @@ public class TaskController {
         List<TaskResponseDTO> filteredTasks = taskService.filterTasks(taskStatus, startDate, endDate, userId, authentication);
         return ResponseEntity.ok(filteredTasks);
     }
+
+
+    @PatchMapping("/admin/{id}")
+@PreAuthorize("hasRole('ADMIN')")
+public ResponseEntity<?> updateTaskAsAdmin(
+        @PathVariable Long id,
+        @RequestBody TaskUpdateDTO dto
+) {
+    Optional<Tasks> optionalTask = taskRepo.findById(id);
+    if (optionalTask.isEmpty()) {
+        return ResponseEntity.notFound().build();
+    }
+
+    Tasks task = optionalTask.get();
+
+    // Atualiza somente os campos presentes
+    if (dto.getTitle() != null) task.setTitle(dto.getTitle());
+    if (dto.getDescription() != null) task.setDescription(dto.getDescription());
+    if (dto.getDueDate() != null) task.setDueDate(dto.getDueDate());
+    if (dto.getStatus() != null) task.setStatus(dto.getStatus());
+
+    taskRepo.save(task);
+
+    return ResponseEntity.ok("Tarefa atualizada com sucesso.");
+}
+
 
 
 

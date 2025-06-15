@@ -8,9 +8,23 @@ type LoginResponse = {
   token: string;
 };
 
+/*export async function login(email: string, password: string) {
+  //const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:8080";
+  const res = await api.post<LoginResponse>(
+    `${apiUrl}/auth/login`,
+    { email, password }
+  );
+  const { token, ...user } = res.data;
+
+  localStorage.setItem("accessToken", token);
+  localStorage.setItem("user", JSON.stringify(user));
+
+  return user;
+}*/
+
 export async function login(email: string, password: string) {
   const res = await api.post<LoginResponse>(
-    `${process.env.REACT_APP_API_URL}/auth/login`,
+    "/auth/login",
     { email, password }
   );
   const { token, ...user } = res.data;
@@ -20,4 +34,5 @@ export async function login(email: string, password: string) {
 
   return user;
 }
+
 

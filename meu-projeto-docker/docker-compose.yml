@@ -11,7 +11,7 @@ services:
       POSTGRES_DB: springdb
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-admin.sql:/docker-entrypoint-initdb.d/init-admin.sql
+      #- ./init-admin.sql:/docker-entrypoint-initdb.d/init-admin.sql
     networks:
       - app-network
     ports:
@@ -22,6 +22,7 @@ services:
     container_name: spring_backend
     depends_on:
       - postgres
+    restart: always
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/springdb
       SPRING_DATASOURCE_USERNAME: postgres
@@ -36,6 +37,7 @@ services:
     container_name: react_frontend
     depends_on:
       - backend
+    restart: always
     networks:
       - app-network
     ports:

@@ -20,7 +20,18 @@ type TaskFilters = {
 };
 
 export const filterTasks = async (filters: TaskFilters) => {
-  const params = new URLSearchParams(filters).toString();
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    throw new Error("Usuário não autenticado. Token ausente.");
+  }
+  const cleanedFilters = Object.entries(filters)
+    .filter(([_, value]) => value !== undefined && value !== "")
+    .reduce((acc, [key, value]) => {
+      acc[key] = value;
+      return acc;
+    }, {} as Record<string, string>);
+
+  const params = new URLSearchParams(cleanedFilters).toString();
   const res = await api.get(`/tasks/filter?${params}`);
   return res.data;
 };
@@ -49,7 +60,7 @@ type NewTaskPayload = {
   description: string;
   dueDate: string;
   status?: "TODO" | "IN_PROGRESS" | "DONE";
-  responsible?: number; // ID do responsável
+  responsibleId?: number; // ID do responsável
 };
 
 
@@ -59,7 +70,7 @@ export async function createTask(task: NewTaskPayload): Promise<Tasks> {
 }
 
 
-export const updateResponsible = async (taskId: number, responsibleId: number | null) => {
+/*export const updateResponsible = async (taskId: number, responsibleId: number | null) => {
   const token = localStorage.getItem("accessToken");
   if (!token) throw new Error("Token JWT ausente.");
 
@@ -68,10 +79,23 @@ export const updateResponsible = async (taskId: number, responsibleId: number | 
     { headers: { Authorization: `Bearer ${token}` } }
   );
   return res.data;
+};*/
+
+export const updateResponsible = async (taskId: number, responsibleId: number | null) => {
+  const token = localStorage.getItem("accessToken");
+
+  console.log("Token no updateResponsible:", token);
+
+  if (!token) throw new Error("Token JWT ausente.");
+
+  // Como o interceptor já injeta o token, não é necessário passar o header manualmente
+  const res = await api.put(`/tasks/${taskId}/responsible`, { responsibleId });
+  return res.data;
 };
 
 
-export const getAllUsers = async (): Promise<User[]> => {
+
+/*export const getAllUsers = async (): Promise<User[]> => {
   const token = localStorage.getItem("accessToken");
   console.log("Token atual:", token);
 
@@ -91,4 +115,40 @@ export const getAllUsers = async (): Promise<User[]> => {
   }
 
   return response.json();
+};*/
+
+export const getAllUsers = async (): Promise<User[]> => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    throw new Error("Usuário não autenticado. Token ausente.");
+  }
+
+  const res = await api.get("/admin/users", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return res.data;
+};
+
+export const updateTaskAsAdmin = async (
+  taskId: number,
+  updates: {
+    title?: string;
+    description?: string;
+    dueDate?: string;
+    status?: "TODO" | "IN_PROGRESS" | "DONE";
+  }
+) => {
+  try {
+    const response = await api.patch(`/tasks/admin/${taskId}`, updates);
+    return response.data;
+  } catch (error: any) {
+    let errorMessage = "Erro ao atualizar a tarefa.";
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    }
+    throw new Error(errorMessage);
+  }
 };

@@ -29,8 +29,11 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequestDTO body ) {
+        System.out.println( "Endpoint /login chamado");
+        System.out.println("Email recebido: " + body.email());
         User user = this.repository.findByEmail(body.email()).orElseThrow(() -> new RuntimeException("User not Found"));
         if(passwordEncoder.matches(body.password(), user.getPassword())){
+            System.out.println(" Senha confere! Gerando token...");
             String token = this.tokenService.generateToken(user);
             return ResponseEntity.ok(new ResponseDTO(user.getId(),
                     user.getName(),
@@ -38,6 +41,7 @@ public class AuthController {
                     user.getRole(),
                     token));
         }
+        System.out.println(" Senha inválida!");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 

@@ -14,11 +14,14 @@ import com.jorge.projeto.tarefas.tarefas_java_jwt.model.user.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 
 @Service
 public class AuthService {
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -61,19 +64,24 @@ public class AuthService {
     @PostConstruct
     public void createAdminUserIfNotExists() {
         String adminEmail = "admin@email.com";
+        String adminPassword = System.getenv("ADMIN_PASSWORD");
+
+        if(adminPassword == null || adminPassword.isBlank()) {
+            adminPassword = "123456"; 
+        }
 
         if (userRepository.findByEmail(adminEmail).isEmpty()) {
             User admin = new User();
             admin.setName("Admin");
             admin.setEmail(adminEmail);
-            admin.setPassword(passwordEncoder.encode("123456")); // senha segura
+            admin.setPassword(passwordEncoder.encode(adminPassword));
             admin.setRole(Role.ADMIN);
             admin.setCreatedAt(LocalDateTime.now());
 
             userRepository.save(admin);
-            System.out.println("Usuário ADMIN criado automaticamente.");
+            log.info(" Usuário ADMIN criado automaticamente: {}", adminEmail);
         } else {
-            System.out.println("Usuário ADMIN já existe.");
+            log.info(" Usuário ADMIN já existe: {}", adminEmail);
         }
     }
 }

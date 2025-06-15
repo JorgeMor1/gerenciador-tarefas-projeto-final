@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+//import axios from 'axios';
+import api from '../services/Api';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useNavigate } from 'react-router-dom';
 
 interface RegisterProps {
   onSuccess: () => void;
 }
 
-const Register: React.FC<RegisterProps> = ({ onSuccess }) =>{
+const Register: React.FC<RegisterProps> = ({ onSuccess }) => {
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
     password: '',
-    role: 'user'
+    role: 'USER'
   });
 
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,50 +26,75 @@ const Register: React.FC<RegisterProps> = ({ onSuccess }) =>{
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    //const token = localStorage.getItem('authToken');
     try {
-      await axios.post('${process.env.REACT_APP_API_URL}/auth/register', formData);
-        onSuccess();
+      const endpoint = formData.role === 'ADMIN' ? '/admin/register' : '/admin/user/register';
+      await api.post(endpoint, formData);
+      onSuccess();
+      navigate('/dashboard');
     } catch (err: any) {
+      //setError('Erro ao cadastrar usuário. Verifique os dados ou tente novamente.');
+      if (err.response) {
+        console.error('Erro na resposta:', err.response.data);
+      } else if (err.request) {
+        console.error('Erro na requisição:', err.request);
+      } else {
+        console.error('Erro desconhecido:', err.message);
+      }
       setError('Erro ao cadastrar usuário. Verifique os dados ou tente novamente.');
     }
   };
 
   return (
-      <form onSubmit={handleSubmit}>
-        <input
-          name="email"
-          className="form-control mb-3"
-          type="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
+    <form onSubmit={handleSubmit}>
+      <input
+        name="name"
+        className="form-control mb-3"
+        type="text"
+        placeholder="Nome"
+        value={formData.name}
+        onChange={handleChange}
+        required
+      />
 
-        <input
-          name="password"
-          className="form-control mb-3"
-          type="password"
-          placeholder="Senha"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
+      <input
+        name="email"
+        className="form-control mb-3"
+        type="email"
+        placeholder="Email"
+        value={formData.email}
+        onChange={handleChange}
+        required
+      />
 
-        <select
-          name="role"
-          className="form-select mb-3"
-          value={formData.role}
-          onChange={handleChange}
-        >
-          <option value="user">Usuário</option>
-          <option value="admin">Administrador</option>
-        </select>
+      <input
+        name="password"
+        className="form-control mb-3"
+        type="password"
+        placeholder="Senha"
+        value={formData.password}
+        onChange={handleChange}
+        required
+      />
 
-        <button className="btn btn-primary w-100" type="submit">Cadastrar Usuário</button>
+      <select
+        name="role"
+        className="form-select mb-3"
+        value={formData.role}
+        onChange={handleChange}
+      >
+        <option value="USER">Usuário</option>
+        <option value="ADMIN">Administrador</option>
+      </select>
 
-        {error && <div className="alert alert-danger mt-3">{error}</div>}
-      </form>
+      <button className="btn btn-primary w-100" type="submit" >Cadastrar Usuário</button>
+
+      <button className="btn btn-secondary" type="button" onClick={() => navigate("/dashboard")}>
+        Cancelar
+      </button>
+
+      {error && <div className="alert alert-danger mt-3">{error}</div>}
+    </form>
   );
 };
 

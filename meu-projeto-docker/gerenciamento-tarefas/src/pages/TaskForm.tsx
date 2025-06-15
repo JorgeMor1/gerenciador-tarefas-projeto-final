@@ -8,6 +8,8 @@ import { type StatusOption } from "../../src/componentes/StatusSelect";
 import StatusSelect from "../../src/componentes/StatusSelect";
 import { getAllUsers } from "../services/TaskService";
 import { updateResponsible } from "../services/UserService";
+import api from "../services/Api";
+
 
 export default function TarefaForm() {
   const { id } = useParams(); // ID da rota, se existir estamos editando
@@ -20,7 +22,6 @@ export default function TarefaForm() {
     dueDate: "",
     status: "TODO",
     responsible: undefined,
-
 
   });
 
@@ -66,6 +67,10 @@ const handleSubmit = async (e: React.FormEvent) => {
   }
 
   try {
+    if (user?.role === "ADMIN" && !form.responsible) {
+      setErro("Selecione um responsável para a tarefa.");
+      return;
+    }
     const payload = {
       title: form.title,
       description: form.description,
@@ -85,7 +90,8 @@ const handleSubmit = async (e: React.FormEvent) => {
 
       await updateTask(Number(id), payload);
     } else {
-      await createTask({ ...payload, responsible: form.responsible });
+      console.log("Payload enviado:", { ...payload, responsibleId: form.responsible });
+      await createTask({ ...payload, responsibleId: form.responsible });
     }
 
     navigate("/dashboard");
@@ -96,7 +102,25 @@ const handleSubmit = async (e: React.FormEvent) => {
   }
 };
 
-  const handleDelete = async () => {
+
+const handleDelete = async () => {
+  if (!id) return;
+
+  const confirmDelete = window.confirm("Tem certeza que deseja deletar esta tarefa?");
+  if (!confirmDelete) return;
+
+  try {
+    await api.delete(`/tasks/${id}`);
+    alert("Tarefa deletada com sucesso!");
+    navigate("/dashboard");
+  } catch (err: any) {
+    console.error(err);
+    alert("Erro ao deletar tarefa: " + (err.response?.data?.message || "Erro desconhecido"));
+  }
+};
+
+
+  /*const handleDelete = async () => {
   if (!id) return;
 
   const confirmDelete = window.confirm("Tem certeza que deseja deletar esta tarefa?");
@@ -123,24 +147,41 @@ const handleSubmit = async (e: React.FormEvent) => {
     console.error(err);
     alert("Erro ao deletar tarefa.");
   }
-};
+};*/
 
 
-  const handleResponsibleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  const selectedId = Number(e.target.value);
-  const selectedUser = users.find(user => user.id === selectedId);
+  /*const handleResponsibleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedId = Number(e.target.value);
+    //const selectedUser = users.find(user => user.id === selectedId);
 
-  if (!selectedUser) return;
+    //if (!selectedUser) return;
 
-  setForm((prev) => ({
-    ...prev,
-    responsible: Number(e.target.value),
-  }));
+    setForm((prev) => ({
+      ...prev,
+      responsible: Number(e.target.value),
+    }));
 
-  if (form.id) {
-    updateResponsible(form.id, selectedId); 
-  }
-};
+    if (form.id) {
+      updateResponsible(form.id, selectedId); 
+    }
+  };*/
+
+  const handleResponsibleChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedId = Number(e.target.value);
+    setForm((prev) => ({
+      ...prev,
+      responsible: selectedId,
+    }));
+  
+    if (id) {  // 'id' vindo do useParams()
+      try {
+        await updateResponsible(Number(id), selectedId);
+      } catch (error) {
+        console.error("Erro ao atualizar responsável:", error);
+      }
+    }
+  };
+  
 
 
 
@@ -205,6 +246,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     name="responsible"
      value={form.responsible ?? ""}
      onChange={handleResponsibleChange}
+     required={user?.role === "ADMIN"}
 
   >
     <option value="">Selecione um responsável</option>

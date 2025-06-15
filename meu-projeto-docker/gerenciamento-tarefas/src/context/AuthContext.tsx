@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 
 type User = {
   id: number;
+  name: string; 
   email: string;
   role: string;
 };
@@ -12,6 +13,7 @@ type AuthContextType = {
   logout: () => void;
   isAuthenticated: boolean;
 };
+
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
@@ -26,11 +28,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   async function login(email: string, password: string) {
   const user = await import("../services/AuthService").then(s => s.login(email, password));
     setUser(user);
+
   }
 
   function logout() {
      localStorage.removeItem("accessToken");
-  localStorage.removeItem("refreshToken");
+  //localStorage.removeItem("refreshToken");
   localStorage.removeItem("user");
   setUser(null);
   }

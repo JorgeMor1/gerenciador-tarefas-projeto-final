@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import TaskCard from "../pages/TaskCards";
 import TaskFilters from "../componentes/TaskFilter";
-import { getMyTasks, filterTasks, updateTask } from "../services/TaskService";
+import {  filterTasks, updateTask } from "../services/TaskService";
+import { getAllUsers } from "../services/UserService";
 import { Navigate, useNavigate } from "react-router-dom";
 import type { Tasks } from "../componentes/types/Tasks";
 import TaskTable from "../componentes/TaskTable";
@@ -12,21 +13,48 @@ export default function Dashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [tasks, setTasks] = useState<Tasks[]>([]);
-  const [users] = useState<User[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
 
   if (!user) {
     return <Navigate to="/login" />;
   }
-  const loadTasks = async (filters = {}) => {
-    let data;
+
+  const loadTasks = async (filters: Record<string, any> = {}) => {
+    try {
+      let data;
+  
+      if (user.role === "ADMIN") {
+        data = await filterTasks(filters); // Admin: filtro normal
+      } else {
+        // Força o filtro para o usuário logado
+        const userFilters = { ...filters, userId: String(user.id) };
+        data = await filterTasks(userFilters); // Usuário comum: filtro com userId
+      }
+  
+      setTasks(data);
+    } catch (error) {
+      console.error("Erro ao carregar tarefas:", error);
+    }
+    /*let data;
     if (user.role === "ADMIN") {
        data = await filterTasks(filters);
       setTasks(data);
     } else {
        data = await getMyTasks();
        setTasks(data);
-      }
+      }*/
       //console.log("Dados carregados: ", data)
+  };
+
+    const loadUsers = async () => {
+      if (user.role === "ADMIN") {
+        try {
+          const data = await getAllUsers();
+          setUsers(data);
+        } catch (error) {
+          console.error("Erro ao carregar usuários:", error);
+        }
+      }
     };
 
   const handleUpdateTask = async (id: number, update: any) => {
@@ -36,6 +64,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadTasks();
+    loadUsers();
   }, []);
 
   const handleLogout = () => {
@@ -68,7 +97,7 @@ export default function Dashboard() {
         <div className="row">
         {tasks.map(task => (
           <div className="col-md-6 col-lg-4 mb-4" key={task.id}>
-            <TaskCard task={task} onUpdate={handleUpdateTask} />
+            <TaskCard task={task} users={users}  onUpdate={handleUpdateTask} />
           </div>
       ))}
     </div>

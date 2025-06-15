@@ -4,6 +4,7 @@ package com.jorge.projeto.tarefas.tarefas_java_jwt.service;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.dto.ResponsibleDTO;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.dto.TaskRequestDTO;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.dto.TaskResponseDTO;
+import com.jorge.projeto.tarefas.tarefas_java_jwt.dto.TaskUpdateDTO;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.model.role.Role;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.model.task.TaskStatus;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.model.task.Tasks;
@@ -12,11 +13,13 @@ import com.jorge.projeto.tarefas.tarefas_java_jwt.interfaces.repository.UserRepo
 import com.jorge.projeto.tarefas.tarefas_java_jwt.interfaces.repository.TaskRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+import static com.jorge.projeto.tarefas.specifications.TaskSpecification. *;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -74,8 +77,26 @@ public class TaskService {
     }
 
 
-
     public List<TaskResponseDTO> filterTasks(TaskStatus status, LocalDate start, LocalDate end, Long userId, Authentication auth) {
+    Jwt jwt = (Jwt) auth.getPrincipal();
+    Long jwtUserId = Long.valueOf(jwt.getClaimAsString("id"));
+    String role = jwt.getClaimAsString("role");
+
+    // Se for USER, sempre força o filtro para o próprio ID
+    if ("USER".equals(role)) {
+        userId = jwtUserId;
+    }
+
+    var spec = Specification.where(hasStatus(status))
+            .and(hasDueDateAfter(start))
+            .and(hasDueDateBefore(end))
+            .and(hasResponsibleId(userId));
+
+    List<Tasks> tasks = taskRepo.findAll(spec);
+    return tasks.stream().map(this::toDTO).toList();
+}
+
+    /*public List<TaskResponseDTO> filterTasks(TaskStatus status, LocalDate start, LocalDate end, Long userId, Authentication auth) {
         Jwt jwt = (Jwt) auth.getPrincipal();
 
         Long jwtUserId = Long.valueOf(jwt.getClaimAsString("id"));
@@ -89,7 +110,7 @@ public class TaskService {
         List<Tasks> tasks = taskRepo.findByStatusAndDueDateBetweenAndResponsibleId(status, start, end, userId);
 
         return tasks.stream().map(this::toDTO).toList();
-    }
+    }*/
 
 
     private TaskResponseDTO toDTO(Tasks task) {
@@ -99,13 +120,16 @@ public class TaskService {
         dto.setDescription(task.getDescription());
         dto.setRole(task.getResponsible().getRole());
 
-        dto.setDueDate(task.getDueDate().toString());
+        //dto.setDueDate(task.getDueDate().toString());
+        dto.setDueDate(task.getDueDate() != null ? task.getDueDate().toString() : null);
+
         if (task.getResponsible() != null) {
             ResponsibleDTO res = new ResponsibleDTO();
             res.setId(task.getResponsible().getId());
             res.setName(task.getResponsible().getName());
             dto.setResponsible(res);
         }
+        dto.setStatus(task.getStatus());
         return dto;
     }
 
@@ -140,6 +164,19 @@ public class TaskService {
         dto.setStatus(task.getStatus());
         return dto;
     }
+
+    public void updateTaskAsAdmin(Long taskId, TaskUpdateDTO dto) {
+    Tasks task = taskRepo.findById(taskId)
+        .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada"));
+
+    if (dto.getTitle() != null) task.setTitle(dto.getTitle());
+    if (dto.getDescription() != null) task.setDescription(dto.getDescription());
+    if (dto.getDueDate() != null) task.setDueDate(dto.getDueDate());
+    if (dto.getStatus() != null) task.setStatus(dto.getStatus());
+
+    taskRepo.save(task);
+}
+
 
 
 }

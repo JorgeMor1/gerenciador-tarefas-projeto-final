@@ -22,12 +22,24 @@ export default function TaskTable({ tasks, users }: Props) {
   const formatDate = (dateStr: string) =>
     new Date(dateStr).toLocaleDateString("pt-BR", { timeZone: "UTC" });
   
-  const getUserNameById = (id?: number) => {
+  const getUserName = (responsible: any) => {
+    if (!responsible) return "Sem responsável";
+  
+    if (typeof responsible === "object" && "name" in responsible) {
+      return responsible.name;
+    }
+  
+    const user = users.find((u) => u.id === responsible);
+    return user ? user.name : "Sem responsável";
+  };
+  
+
+  /*const getUserNameById = (id?: number) => {
     if (!users) return "Sem responsável"; 
     
     const user = users.find((u) => u.id === id);
     return user ? user.name : "Sem responsável";
-  };
+  };*/
   
 
   //const handleEdit = (id: number) => navigate(`/tarefas/${id}/editar`);
@@ -52,8 +64,10 @@ export default function TaskTable({ tasks, users }: Props) {
         {tasks.map((task) => (
           <tr key={task.id}>
             <td>{task.title}</td>
-            <td>{task.status ? statusLabels[task.status] : "Sem status"}</td>
-            <td>{ getUserNameById(task.responsible)}</td>
+            {/*<td>{task.status ? statusLabels[task.status] : "Sem status"}</td>*/}
+            <td>{task.status ? statusLabels[task.status] ?? "Desconhecido" : "Sem status"}</td>
+            {/*<td>{ getUserNameById(task.responsible)}</td>*/}
+            <td>{getUserName(task.responsible)}</td>
             <td>{formatDate(task.dueDate)}</td>
             <td style={{ minWidth: "100px" }}>
                 <button className="btn btn-outline-primary btn-sm" onClick={() => navigate(`/tarefas/${task.id}/editar`)}>
