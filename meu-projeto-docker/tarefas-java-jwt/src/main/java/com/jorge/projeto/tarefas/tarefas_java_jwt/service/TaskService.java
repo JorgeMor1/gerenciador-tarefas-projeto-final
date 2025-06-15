@@ -1,6 +1,5 @@
 package com.jorge.projeto.tarefas.tarefas_java_jwt.service;
 
-
 import com.jorge.projeto.tarefas.tarefas_java_jwt.dto.ResponsibleDTO;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.dto.TaskRequestDTO;
 import com.jorge.projeto.tarefas.tarefas_java_jwt.dto.TaskResponseDTO;
@@ -19,7 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
-import static com.jorge.projeto.tarefas.specifications.TaskSpecification. *;
+import static com.jorge.projeto.tarefas.specifications.TaskSpecification.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,7 +32,6 @@ public class TaskService {
 
     @Autowired
     private UserRepository userRepo;
-
 
     public TaskResponseDTO createTask(TaskRequestDTO dto, Authentication auth) {
         Jwt jwt = (Jwt) auth.getPrincipal();
@@ -76,42 +74,25 @@ public class TaskService {
         return toDTO(saved);
     }
 
-
-    public List<TaskResponseDTO> filterTasks(TaskStatus status, LocalDate start, LocalDate end, Long userId, Authentication auth) {
-    Jwt jwt = (Jwt) auth.getPrincipal();
-    Long jwtUserId = Long.valueOf(jwt.getClaimAsString("id"));
-    String role = jwt.getClaimAsString("role");
-
-    // Se for USER, sempre força o filtro para o próprio ID
-    if ("USER".equals(role)) {
-        userId = jwtUserId;
-    }
-
-    var spec = Specification.where(hasStatus(status))
-            .and(hasDueDateAfter(start))
-            .and(hasDueDateBefore(end))
-            .and(hasResponsibleId(userId));
-
-    List<Tasks> tasks = taskRepo.findAll(spec);
-    return tasks.stream().map(this::toDTO).toList();
-}
-
-    /*public List<TaskResponseDTO> filterTasks(TaskStatus status, LocalDate start, LocalDate end, Long userId, Authentication auth) {
+    public List<TaskResponseDTO> filterTasks(TaskStatus status, LocalDate start, LocalDate end, Long userId,
+            Authentication auth) {
         Jwt jwt = (Jwt) auth.getPrincipal();
-
         Long jwtUserId = Long.valueOf(jwt.getClaimAsString("id"));
-
         String role = jwt.getClaimAsString("role");
 
-        if (Role.USER.name().equals(role)) {
+        // Se for USER, sempre força o filtro para o próprio ID
+        if ("USER".equals(role)) {
             userId = jwtUserId;
         }
 
-        List<Tasks> tasks = taskRepo.findByStatusAndDueDateBetweenAndResponsibleId(status, start, end, userId);
+        var spec = Specification.where(hasStatus(status))
+                .and(hasDueDateAfter(start))
+                .and(hasDueDateBefore(end))
+                .and(hasResponsibleId(userId));
 
+        List<Tasks> tasks = taskRepo.findAll(spec);
         return tasks.stream().map(this::toDTO).toList();
-    }*/
-
+    }
 
     private TaskResponseDTO toDTO(Tasks task) {
         TaskResponseDTO dto = new TaskResponseDTO();
@@ -120,7 +101,6 @@ public class TaskService {
         dto.setDescription(task.getDescription());
         dto.setRole(task.getResponsible().getRole());
 
-        //dto.setDueDate(task.getDueDate().toString());
         dto.setDueDate(task.getDueDate() != null ? task.getDueDate().toString() : null);
 
         if (task.getResponsible() != null) {
@@ -133,7 +113,7 @@ public class TaskService {
         return dto;
     }
 
-    //Trocar de responsável na tarefa
+    // Trocar de responsável na tarefa
     public void updateResponsible(Long taskId, Long newResponsibleId) {
         Tasks task = taskRepo.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada"));
@@ -144,9 +124,6 @@ public class TaskService {
         task.setResponsible(responsible);
         taskRepo.save(task);
     }
-
-
-
 
     public TaskResponseDTO convertToResponseDTO(Tasks task) {
         TaskResponseDTO dto = new TaskResponseDTO();
@@ -166,17 +143,19 @@ public class TaskService {
     }
 
     public void updateTaskAsAdmin(Long taskId, TaskUpdateDTO dto) {
-    Tasks task = taskRepo.findById(taskId)
-        .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada"));
+        Tasks task = taskRepo.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada"));
 
-    if (dto.getTitle() != null) task.setTitle(dto.getTitle());
-    if (dto.getDescription() != null) task.setDescription(dto.getDescription());
-    if (dto.getDueDate() != null) task.setDueDate(dto.getDueDate());
-    if (dto.getStatus() != null) task.setStatus(dto.getStatus());
+        if (dto.getTitle() != null)
+            task.setTitle(dto.getTitle());
+        if (dto.getDescription() != null)
+            task.setDescription(dto.getDescription());
+        if (dto.getDueDate() != null)
+            task.setDueDate(dto.getDueDate());
+        if (dto.getStatus() != null)
+            task.setStatus(dto.getStatus());
 
-    taskRepo.save(task);
-}
-
-
+        taskRepo.save(task);
+    }
 
 }

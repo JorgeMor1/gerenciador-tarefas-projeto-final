@@ -27,11 +27,7 @@ export default function TaskCard({ task, onUpdate }: TaskProps) {
   };
 
 
-  /*const statusMap = {
-  DONE: 'Concluída',
-  IN_PROGRESS: 'Em andamento',
-  TODO: 'A fazer',
-  };*/
+
 
   const statusMap: Record<string, string> = {
     DONE: "Concluída",
@@ -45,18 +41,18 @@ export default function TaskCard({ task, onUpdate }: TaskProps) {
         <h5 className="card-title">{task.title}</h5>
         <p className="card-text"><strong>Descrição:</strong> {task.description}</p>
         <p className="card-text">
-    <strong>Status:</strong> {statusMap[task.status] || 'Desconhecido'}
-  </p>
+          <strong>Status:</strong> {statusMap[task.status] || 'Desconhecido'}
+        </p>
         <p className="card-text"><strong>Entrega:</strong> {new Date(task.dueDate).toLocaleDateString()}</p>
 
         {editando ? (
           <>
             <div className="mb-2">
 
-               <StatusSelect
-      value={status as StatusOption}
-      onChange={(value: StatusOption) => setStatus(value)}
-    />
+              <StatusSelect
+                value={status as StatusOption}
+                onChange={(value: StatusOption) => setStatus(value)}
+              />
 
             </div>
             <button className="btn btn-success btn-sm me-2" onClick={handleSalvar}>

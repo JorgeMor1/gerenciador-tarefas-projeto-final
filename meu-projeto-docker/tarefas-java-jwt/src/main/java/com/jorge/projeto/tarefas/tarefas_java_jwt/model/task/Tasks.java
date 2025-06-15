@@ -31,7 +31,6 @@ public class Tasks {
     @Column(name = "due_date")
     private LocalDate dueDate;
 
-    //@JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "responsible_id")
     @JsonIgnoreProperties({"email", "password", "roles"})

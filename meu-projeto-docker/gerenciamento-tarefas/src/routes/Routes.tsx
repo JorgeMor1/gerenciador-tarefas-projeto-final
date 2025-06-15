@@ -19,8 +19,6 @@ export default function AppRoutes() {
       <Route path="*" element={<Navigate to="/dashboard" />} />
       <Route path="/tarefas/nova" element={<TarefaForm />} />
       <Route path="/tarefas/:id/editar" element={<TarefaForm />} />
-      {/*<Route path="/usuarios" element={<Register onSuccess={() => { window.location.href = "/dashboard"; }} />}
-      />*/}
 
       
     </Routes>

@@ -28,11 +28,11 @@ public class AdminController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    //Cadastrar Admin
+    // Cadastrar Admin
     @PostMapping("/register")
     public ResponseEntity<?> registerAdmin(@RequestBody RegisterRequestDTO body) {
         Optional<User> user = repository.findByEmail(body.email());
-        if(user.isEmpty()) {
+        if (user.isEmpty()) {
             User admin = new User();
             admin.setEmail(body.email());
             admin.setPassword(passwordEncoder.encode(body.password()));
@@ -50,7 +50,7 @@ public class AdminController {
     }
 
     @PostMapping("/user/register")
-    @PreAuthorize("hasAuthority('ADMIN')") 
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequestDTO body) {
         Optional<User> user = repository.findByEmail(body.email());
         if (user.isEmpty()) {
@@ -58,7 +58,7 @@ public class AdminController {
             normalUser.setEmail(body.email());
             normalUser.setPassword(passwordEncoder.encode(body.password()));
             normalUser.setName(body.name());
-            normalUser.setRole(Role.USER); 
+            normalUser.setRole(Role.USER);
             normalUser.setCreatedAt(LocalDateTime.now());
             repository.save(normalUser);
 

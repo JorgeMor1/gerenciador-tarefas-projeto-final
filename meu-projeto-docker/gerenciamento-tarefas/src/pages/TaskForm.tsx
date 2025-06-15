@@ -27,16 +27,16 @@ export default function TarefaForm() {
 
   const [users, setUsers] = useState<User[]>([]);
 
-useEffect(() => {
-  getAllUsers()
-    .then(setUsers)
-    .catch(() => console.error("Erro ao buscar usuários"));
-}, []);
+  useEffect(() => {
+    getAllUsers()
+      .then(setUsers)
+      .catch(() => console.error("Erro ao buscar usuários"));
+  }, []);
 
 
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
-  
+
 
   useEffect(() => {
     if (id) {
@@ -49,122 +49,78 @@ useEffect(() => {
   }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-  const { name, value } = e.target;
-
-  setForm((prev) => ({
-    ...prev,
-    [name]: name === "responsible" ? Number(value) : value,
-  }));
-};
-
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setErro("");
-
-  if (!form.title || !form.description || !form.dueDate) {
-    setErro("Preencha todos os campos obrigatórios.");
-    return;
-  }
-
-  try {
-    if (user?.role === "ADMIN" && !form.responsible) {
-      setErro("Selecione um responsável para a tarefa.");
-      return;
-    }
-    const payload = {
-      title: form.title,
-      description: form.description,
-      dueDate: form.dueDate,
-      status: form.status ?? undefined,
-    };
-
-    if (id) {
-      const originalTask = await getTaskById(Number(id));
-
-      const originalResponsibleId = Number(originalTask.responsible);
-      const newResponsibleId = Number(form.responsible);
-
-      if (newResponsibleId !== originalResponsibleId && user?.role === "ADMIN") {
-        await updateResponsible(Number(id), Number(newResponsibleId));
-      }
-
-      await updateTask(Number(id), payload);
-    } else {
-      console.log("Payload enviado:", { ...payload, responsibleId: form.responsible });
-      await createTask({ ...payload, responsibleId: form.responsible });
-    }
-
-    navigate("/dashboard");
-
-  } catch (error: any) {
-    console.error(error);
-    setErro("Erro ao salvar tarefa");
-  }
-};
-
-
-const handleDelete = async () => {
-  if (!id) return;
-
-  const confirmDelete = window.confirm("Tem certeza que deseja deletar esta tarefa?");
-  if (!confirmDelete) return;
-
-  try {
-    await api.delete(`/tasks/${id}`);
-    alert("Tarefa deletada com sucesso!");
-    navigate("/dashboard");
-  } catch (err: any) {
-    console.error(err);
-    alert("Erro ao deletar tarefa: " + (err.response?.data?.message || "Erro desconhecido"));
-  }
-};
-
-
-  /*const handleDelete = async () => {
-  if (!id) return;
-
-  const confirmDelete = window.confirm("Tem certeza que deseja deletar esta tarefa?");
-  if (!confirmDelete) return;
-
-  const token = localStorage.getItem("accessToken"); 
-
-  try {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/tasks/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-      },
-    });
-
-    if (response.ok) {
-      alert("Tarefa deletada com sucesso!");
-      navigate("/dashboard");
-    } else {
-      const error = await response.json();
-      alert("Erro ao deletar tarefa: " + error.message);
-    }
-  } catch (err) {
-    console.error(err);
-    alert("Erro ao deletar tarefa.");
-  }
-};*/
-
-
-  /*const handleResponsibleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedId = Number(e.target.value);
-    //const selectedUser = users.find(user => user.id === selectedId);
-
-    //if (!selectedUser) return;
+    const { name, value } = e.target;
 
     setForm((prev) => ({
       ...prev,
-      responsible: Number(e.target.value),
+      [name]: name === "responsible" ? Number(value) : value,
     }));
+  };
 
-    if (form.id) {
-      updateResponsible(form.id, selectedId); 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErro("");
+
+    if (!form.title || !form.description || !form.dueDate) {
+      setErro("Preencha todos os campos obrigatórios.");
+      return;
     }
-  };*/
+
+    try {
+      if (user?.role === "ADMIN" && !form.responsible) {
+        setErro("Selecione um responsável para a tarefa.");
+        return;
+      }
+      const payload = {
+        title: form.title,
+        description: form.description,
+        dueDate: form.dueDate,
+        status: form.status ?? undefined,
+      };
+
+      if (id) {
+        const originalTask = await getTaskById(Number(id));
+
+        const originalResponsibleId = Number(originalTask.responsible);
+        const newResponsibleId = Number(form.responsible);
+
+        if (newResponsibleId !== originalResponsibleId && user?.role === "ADMIN") {
+          await updateResponsible(Number(id), Number(newResponsibleId));
+        }
+
+        await updateTask(Number(id), payload);
+      } else {
+        console.log("Payload enviado:", { ...payload, responsibleId: form.responsible });
+        await createTask({ ...payload, responsibleId: form.responsible });
+      }
+
+      navigate("/dashboard");
+
+    } catch (error: any) {
+      console.error(error);
+      setErro("Erro ao salvar tarefa");
+    }
+  };
+
+
+  const handleDelete = async () => {
+    if (!id) return;
+
+    const confirmDelete = window.confirm("Tem certeza que deseja deletar esta tarefa?");
+    if (!confirmDelete) return;
+
+    try {
+      await api.delete(`/tasks/${id}`);
+      alert("Tarefa deletada com sucesso!");
+      navigate("/dashboard");
+    } catch (err: any) {
+      console.error(err);
+      alert("Erro ao deletar tarefa: " + (err.response?.data?.message || "Erro desconhecido"));
+    }
+  };
+
+
+
 
   const handleResponsibleChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = Number(e.target.value);
@@ -172,7 +128,7 @@ const handleDelete = async () => {
       ...prev,
       responsible: selectedId,
     }));
-  
+
     if (id) {  // 'id' vindo do useParams()
       try {
         await updateResponsible(Number(id), selectedId);
@@ -181,7 +137,7 @@ const handleDelete = async () => {
       }
     }
   };
-  
+
 
 
 
@@ -219,12 +175,12 @@ const handleDelete = async () => {
 
 
           <StatusSelect
-  value={form.status as StatusOption}
-  onChange={(value: StatusOption) => setForm({ ...form, status: value })}
-/>
+            value={form.status as StatusOption}
+            onChange={(value: StatusOption) => setForm({ ...form, status: value })}
+          />
 
 
-      
+
 
 
           <div className="mb-3">
@@ -240,23 +196,23 @@ const handleDelete = async () => {
 
 
           <div className="mb-3">
-  <label className="form-label">Responsável</label>
-  <select
-    className="form-select"
-    name="responsible"
-     value={form.responsible ?? ""}
-     onChange={handleResponsibleChange}
-     required={user?.role === "ADMIN"}
+            <label className="form-label">Responsável</label>
+            <select
+              className="form-select"
+              name="responsible"
+              value={form.responsible ?? ""}
+              onChange={handleResponsibleChange}
+              required={user?.role === "ADMIN"}
 
-  >
-    <option value="">Selecione um responsável</option>
-    {users.map((user) => (
-      <option key={user.id} value={user.id}>
-        {user.name}
-      </option>
-    ))}
-  </select>
-</div>
+            >
+              <option value="">Selecione um responsável</option>
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
 
           {user?.role === "ADMIN" && id && (
