@@ -1,45 +1,88 @@
-# gerenciador-tarefas-projeto-final
+# 📋 Gerenciador de Tarefas – Projeto Final
 
-## OBS: 
-- Os Endpoints disponíveis estão no controller.
-- Devido ao fato de só o Adm poder criar usuários, foi disponibilizado no Application uma impressão no console onde gera uma senha de acesso do admin para que ele possa criar outros usuários. Por isso, não foi colocado na tela a parte de registro;
-- Também foi adicionado no docker um insert de um usuário que já seta ele com a role de ADMIN, vom isso, ele faz o login no front e já pode cadastrar usuários;
+Aplicação Full Stack para gerenciamento de tarefas entre membros de uma equipe, com autenticação via JWT, controle de permissões e uma interface intuitiva.
 
-## 📌 Objetivo
+---
 
-Desenvolver uma plataforma completa para facilitar o gerenciamento de tarefas em equipes, com:
+## 🧭 Como rodar o projeto
 
-- Registro e login de usuários com segurança;
-- Controle de permissões (usuário comum e administrador);
-- Interface intuitiva para criação, edição, filtragem e visualização de tarefas;
+1. Acesse o diretório onde está o `docker-compose.yml` e execute:
 
-  ## 🚀 Tecnologias Utilizadas
+```bash
+docker-compose down -v
+docker-compose up --build   # ou use: docker-compose up -d
+Verifique os containers em execução:
 
-### Backend
-- **Java + Spring Boot**;
-- **JPA + Hibernate** – ORM para persistência de dados;
-- **PostgreSQL** – Banco de dados relacional;
-- **JWT + BCrypt** – Autenticação segura com hash de senhas
+bash
+Copiar
+Editar
+docker ps
+Acesse o banco de dados PostgreSQL:
 
-  ### Frontend
-- **React** – Biblioteca para construção de interfaces;
-- **TypeScript** – Tipagem estática;
-- **Material UI (MUI)** – Componentes visuais modernos.
+bash
+Copiar
+Editar
+docker exec -it postgres_db psql -U postgres -d springdb
+🔐 Usuário Admin (gerado automaticamente)
+Email: admin@email.com
 
-  ##  Funcionalidades do Backend
+Senha: 123456
 
--  **Autenticação JWT**
-  - Registro, login e logout;
-  - Hash de senha com BCrypt;
-  - Tokens de acesso e refresh.
+Este usuário tem permissão para cadastrar novos usuários (comuns ou administradores).
 
-- **CRUD de Tarefas**
-  - Campos: título, descrição, status, responsável, data de entrega;
-  - Usuários comuns visualizam apenas suas tarefas;
-  - Administradores têm acesso a todas as tarefas.
+⚠️ Ao subir o container, é feito um insert automático no banco com um usuário admin.
+Também é impresso no console o hash da senha gerada, caso precise alterar.
 
--  **CRUD de Usuários (admin only)**
-  - Cadastro, edição, exclusão e listagem de usuários.
+🎯 Objetivo
+Desenvolver uma plataforma para facilitar o gerenciamento de tarefas com:
 
--  **Filtros avançados**
-  - Filtragem de tarefas por status, data e usuário responsável.
+Registro e login com autenticação segura;
+
+Permissões diferenciadas (Usuário e Administrador);
+
+Interface amigável para controle de tarefas.
+
+🚀 Tecnologias Utilizadas
+🔧 Backend
+Java + Spring Boot
+
+JPA + Hibernate – ORM para persistência
+
+PostgreSQL – Banco de dados relacional
+
+JWT + BCrypt – Autenticação e segurança
+
+🎨 Frontend
+React
+
+TypeScript
+
+Material UI (MUI) – Componentes modernos e responsivos
+
+⚙️ Funcionalidades do Backend
+🔐 Autenticação JWT
+Registro, login e logout
+
+Hash de senhas com BCrypt
+
+Tokens de acesso e refresh
+
+🗂️ CRUD de Tarefas
+Campos: título, descrição, status, responsável, data de entrega
+
+Usuários comuns veem apenas suas tarefas
+
+Admins veem todas as tarefas
+
+👥 CRUD de Usuários (Admin apenas)
+Cadastro, edição, exclusão e listagem
+
+🔍 Filtros avançados
+Filtrar tarefas por: status, data e responsável
+
+📎 Observações importantes
+Os endpoints estão documentados nos controllers;
+
+Como apenas admins podem cadastrar usuários, não foi implementada uma tela de registro no frontend;
+
+A criação do usuário admin no banco é feita automaticamente via script no container Docker.
